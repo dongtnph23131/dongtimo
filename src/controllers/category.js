@@ -1,4 +1,5 @@
 import Category from "../models/category";
+import Product from "../models/product";
 import { categorySchema } from "../schemas/category";
 
 export const create = async (req, res) => {
@@ -45,12 +46,13 @@ export const getAll = async (req, res) => {
 export const get = async (req, res) => {
     try {
         const id = req.params.id
-        const category = await Category.findById(id)
+        const category = await Category.findById(id).populate("products")
         if (!category) {
             return res.status(200).json({
                 message: "Không tìm thấy danh mục sản phẩm nào"
             })
         }
+
         return res.status(200).json(category)
     }
     catch (error) {
@@ -62,6 +64,9 @@ export const get = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const id = req.params.id
+         await Product.updateMany({categoryId:id},{
+            categoryId:"uncategorized"
+        })
         await Category.findOneAndDelete({ _id: id })
         return res.status(200).json({
             message: "Xóa danh mục sản phẩm thành công"

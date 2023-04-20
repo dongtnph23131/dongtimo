@@ -4,7 +4,7 @@ import Category from "../models/category";
 import cloudinary from "../config/cloudinary";
 export const create = async (req, res) => {
     const files = req.files
-    if (!Array.isArray(files)) {
+    if (!Array.isArray(files) || files.length == 0) {
         return res.status(400).json({
             message: "Bạn cần upload file ảnh sản phẩm"
         })
@@ -61,3 +61,133 @@ export const create = async (req, res) => {
         })
     }
 }
+export const getAll = async (req, res) => {
+    try {
+        const { _sort = "createAt", _limit = 100, _page = 1, _order = "asc" } = req.query
+        const options = {
+            page: _page,
+            limit: _limit,
+            sort: {
+                [_sort]: _order == "desc" ? -1 : 1
+            },
+            populate: {
+                path: "categoryId",
+                select: "name"
+            }
+        }
+        const data = await Product.paginate({ categotyId: null }, options)
+        if (data.docs.length == 0) {
+            return res.status(200).json({
+                message: "Không có sản phẩm nào"
+            })
+        }
+        return res.status(200).json(data)
+    }
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        const id = req.params.id
+        const product = await Product.findById(id)
+        if (!product) {
+            return res.status(400).json({
+                message: "Không tìm thấy sản phẩm nào"
+            })
+        }
+        const { isHardDelete } = req.body
+        if (isHardDelete) {
+            await product.deleteOne({ _id: id })
+            await Category.findByIdAndUpdate(product.categoryId, {
+                $pull: {
+                    products: product._id
+                }
+            })
+        }
+        else {
+            await product.delete()
+        }
+        return res.status(400).json({
+            message: "Xóa sản phẩm thành công",
+            product
+        })
+    }
+    catch (error) {
+        res.status(400).json({
+            message: "Xóa sản phẩm thất bại",
+            error: error.message
+        })
+    }
+}
+
+
+export const restore = async (req, res) => {
+    try {
+        const id = req.params.id
+        const product = await Product.findOneDeleted({ _id: id })
+        if (!product) {
+            return res.status(400).json({
+                message: "Không tìm thấy sản phẩm nào"
+            })
+        }
+        if (!product.deleted) {
+            return res.status(400).json({
+                message: "Sản phẩm chưa bị xóa mềm"
+            })
+        }
+        await product.restore()
+        return res.status(200).json({
+            message: "Sản phẩm được phục hồi thành công",
+            product
+        })
+    }
+    catch (error) {
+        res.status(400).json({
+            message: "Khôi phục sản phẩm thất bại",
+            error: error.message
+        })
+    }
+}
+
+export const get = async (req, res) => {
+    try {
+        const id=req.params.id
+        const product=await Product.findById(id)
+        if(!product){
+            return res.status(400).json({
+                message:"Không tìm thấy sản phẩm nào",
+                product
+            })
+        }
+        return res.status(200).json(product)
+    }
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+}
+
+export const update=async (req,res)=>{
+    try{
+        const id=req.params.id
+        const updateProduct=await Product.findByIdAndUpdate(id,req.body,{
+            new:true
+        })
+        return res.status(200).json({
+            message:"Cập nhập sản phẩm thành công",
+            updateProduct
+        })
+    }
+    catch (error){
+        res.status(400).json({
+            message:"Cập nhập sản phẩm không thành công",
+            error:error.message
+        })
+    }
+}
+

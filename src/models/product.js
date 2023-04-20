@@ -1,3 +1,4 @@
+import { required } from "joi";
 import mongoose from "mongoose";
 import mongooseDelete from "mongoose-delete";
 import mongoosePaginate from "mongoose-paginate-v2"
@@ -16,8 +17,9 @@ const productSchema = new mongoose.Schema({
       required: true
    },
    categoryId: {
-      type: mongoose.Types.ObjectId,
-      ref: "Category"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required:true
    },
    images: [Object],
    deleted: {
