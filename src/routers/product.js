@@ -3,6 +3,8 @@ import { create, get, getAll, remove, restore, update } from "../controllers/pro
 import {CloudinaryStorage} from "multer-storage-cloudinary"
 import multer from "multer"
 import cloudinary from "../config/cloudinary"
+import { authenticate } from "../middlewares/authenticate"
+import { authorization } from "../middlewares/authorization"
 const router =express.Router()
 
 const storage=new CloudinaryStorage({
@@ -15,10 +17,10 @@ const storage=new CloudinaryStorage({
 
 const upload=multer({storage: storage})
 
-router.post("/products",upload.array("images",10),create)
+router.post("/products",authenticate,authorization,upload.array("images",10),create)
 router.get("/products",getAll)
-router.delete("/products/:id",remove)
-router.patch("/products/:id",restore)
+router.delete("/products/:id",authenticate,authorization,remove)
+router.patch("/products/:id",authenticate,authorization,restore)
 router.get("/products/:id",get)
-router.put("/products/:id",update)
+router.put("/products/:id",authenticate,authorization,update)
 export default router

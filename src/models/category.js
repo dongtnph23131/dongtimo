@@ -1,22 +1,27 @@
 import mongoose from "mongoose";
-
-const categorySchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:true
+import mongooseDelete from "mongoose-delete";
+import mongoosePaginate from "mongoose-paginate-v2"
+const plugins = [mongooseDelete, mongoosePaginate]
+const categorySchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
     isDeleteable: {
         type: Boolean,
         default: true
     },
-    products:[
+    products: [
         {
-            type:mongoose.Types.ObjectId,
-            ref:"Product"
+            type: mongoose.Types.ObjectId,
+            ref: "Product"
         }
     ]
-},{
-    timestamps:true,
-    versionKey:false
+}, {
+    timestamps: true,
+    versionKey: false
 })
-export default mongoose.model("Category",categorySchema)
+plugins.map(plugin => {
+    categorySchema.plugin(plugin)
+})
+export default mongoose.model("Category", categorySchema)

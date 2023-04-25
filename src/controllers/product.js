@@ -63,17 +63,15 @@ export const create = async (req, res) => {
 }
 export const getAll = async (req, res) => {
     try {
-        const { _sort = "createAt", _limit = 100, _page = 1, _order = "asc" } = req.query
+        const { _sort = "createAt", _limit = 100, _page = 1, _order = "asc", _expand } = req.query
+        const populateOptions = _expand ? [{ path: "categoryId", select: "name" }] : []
         const options = {
             page: _page,
             limit: _limit,
             sort: {
                 [_sort]: _order == "desc" ? -1 : 1
             },
-            populate: {
-                path: "categoryId",
-                select: "name"
-            }
+            populate: populateOptions
         }
         const data = await Product.paginate({ categotyId: null }, options)
         if (data.docs.length == 0) {
@@ -155,11 +153,11 @@ export const restore = async (req, res) => {
 
 export const get = async (req, res) => {
     try {
-        const id=req.params.id
-        const product=await Product.findById(id)
-        if(!product){
+        const id = req.params.id
+        const product = await Product.findById(id)
+        if (!product) {
             return res.status(400).json({
-                message:"Không tìm thấy sản phẩm nào",
+                message: "Không tìm thấy sản phẩm nào",
                 product
             })
         }
@@ -172,21 +170,21 @@ export const get = async (req, res) => {
     }
 }
 
-export const update=async (req,res)=>{
-    try{
-        const id=req.params.id
-        const updateProduct=await Product.findByIdAndUpdate(id,req.body,{
-            new:true
+export const update = async (req, res) => {
+    try {
+        const id = req.params.id
+        const updateProduct = await Product.findByIdAndUpdate(id, req.body, {
+            new: true
         })
         return res.status(200).json({
-            message:"Cập nhập sản phẩm thành công",
+            message: "Cập nhập sản phẩm thành công",
             updateProduct
         })
     }
-    catch (error){
+    catch (error) {
         res.status(400).json({
-            message:"Cập nhập sản phẩm không thành công",
-            error:error.message
+            message: "Cập nhập sản phẩm không thành công",
+            error: error.message
         })
     }
 }

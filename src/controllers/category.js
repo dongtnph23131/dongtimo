@@ -28,7 +28,7 @@ export const create = async (req, res) => {
 
 export const getAll = async (req, res) => {
     try {
-        const listCategory = await Category.find()
+        const listCategory = await Category.find().populate('products')
         if (listCategory.length == 0) {
             return res.status(200).json({
                 message: "Chưa có danh mục sản phẩm nào"
@@ -64,10 +64,18 @@ export const get = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const id = req.params.id
-         await Product.updateMany({categoryId:id},{
-            categoryId:"uncategorized"
+        await Product.updateMany({ categoryId: id }, {
+            categoryId: null
         })
-        await Category.findOneAndDelete({ _id: id })
+        const category = await Category.findByIdAndDelete(id)
+        if (!category) {
+            return res.status(400).json({
+                message: "Không tìm thấy danh mục sản phẩm nào"
+            })
+        }
+        if (!category.isDeleteable) {
+            return res.status(400).json({ message: 'Không thể xóa danh mục này' });
+        }
         return res.status(200).json({
             message: "Xóa danh mục sản phẩm thành công"
         })
