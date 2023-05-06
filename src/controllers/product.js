@@ -64,7 +64,8 @@ export const create = async (req, res) => {
 export const getAll = async (req, res) => {
     try {
         const { _sort = "createAt", _limit = 100, _page = 1, _order = "asc", _expand } = req.query
-        const populateOptions = _expand ? [{ path: "categoryId", select: "name" }] : []
+        const populateOptions = _expand ? { path: "categoryId", select: "name" } : {}
+
         const options = {
             page: _page,
             limit: _limit,
