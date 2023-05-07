@@ -1,10 +1,10 @@
-import User from "../models/user"
 import nodemailer from "nodemailer"
+import User from "../models/user"
 import crypto from "crypto-js"
 import bcrypt from "bcryptjs"
 import jwt from  "jsonwebtoken"
-export const forgotPassword = async (req, res) => {
-    try {
+try {
+        export const forgotPassword = async (req, res) => {
         const email = req.body.email
         const user = await User.findOne({ email: email })
         if (!user) {
@@ -90,3 +90,30 @@ export const resetPassword = async (req, res, next) => {
 }
 
 
+export const updatePassword=async (req,res)=>{
+    try{
+        const isMatch=await bcrypt.compare(user.password,req.body.currentPassword)
+        if(!isMatch){
+            return res.status(400).json({
+                message:"Mật khẩu hiện tại không đúng"
+            }
+            userNew,
+            const userNew=await User.findByIdAndUpdate(req.user._id,{password:req.body.password},{
+                const user=req.user
+                new:true
+        }
+            })
+            const token=jwt.sign({id:userNew._id},"dongtimo",{
+        })
+                expiresIn:'1d'
+            })
+        return res.status(200).json({
+            message:"Đổi mật khẩu thành công",
+            token
+        })
+        catch (error){
+        res.status(400).json({
+            message:error.message
+        })
+    }
+}

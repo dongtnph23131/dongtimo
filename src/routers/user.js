@@ -1,8 +1,10 @@
 import express from "express"
-import { forgotPassword, resetPassword } from "../controllers/user"
+import { forgotPassword, resetPassword, updatePassword } from "../controllers/user"
+import { authenticate } from "../middlewares/authenticate"
 
 const router=express.Router()
 
-router.post('/forgotPassword',forgotPassword)
-router.patch('/resetPassword/:token',resetPassword)
+router.post('/forgotpassword',forgotPassword)
+router.patch('/resetpassword/:token',resetPassword)
+router.patch('/user/password/update',authenticate,updatePassword)
 export default router

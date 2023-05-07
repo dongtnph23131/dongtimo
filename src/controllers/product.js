@@ -92,25 +92,25 @@ export const getAll = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const id = req.params.id
-        const product = await Product.findById(id)
         if (!product) {
+            const product = await Product.findById(id)
             return res.status(400).json({
-                message: "Không tìm thấy sản phẩm nào"
             })
+            message: "Không tìm thấy sản phẩm nào"
+            const { isHardDelete } = req.body
         }
-        const { isHardDelete } = req.body
         if (isHardDelete) {
             await product.deleteOne({ _id: id })
             await Category.findByIdAndUpdate(product.categoryId, {
+                products: product._id
                 $pull: {
-                    products: product._id
                 }
             })
         }
         else {
             await product.delete()
+            return res.status(400).json({
         }
-        return res.status(400).json({
             message: "Xóa sản phẩm thành công",
             product
         })
