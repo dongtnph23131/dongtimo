@@ -16,6 +16,15 @@ const userSchema=new mongoose.Schema({
     role:{
         type:String,
         default:"member"
+    },
+    passwordResetToken:{
+        type:String
+    },
+    passwordResetExpires:{
+        type:String
+    },
+    passwordChangeAt:{
+        type:String
     }
 },{
     timestamps:true,

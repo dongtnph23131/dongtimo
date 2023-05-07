@@ -74,7 +74,7 @@ export const getAll = async (req, res) => {
             },
             populate: populateOptions
         }
-        const data = await Product.paginate({ categotyId: null }, options)
+        const data = await Product.paginate({} , options)
         if (data.docs.length == 0) {
             return res.status(200).json({
                 message: "Không có sản phẩm nào"

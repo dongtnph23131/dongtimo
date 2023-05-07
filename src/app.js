@@ -5,7 +5,7 @@ import cors from "cors";
 import categoryRouter from "./routers/category"
 import productRouter from "./routers/product"
 import authRouter from "./routers/auth"
-
+import userRouter from "./routers/user"
 dotenv.config()
 
 const app = express();
@@ -14,7 +14,7 @@ app.use(cors());
 app.use("/api",categoryRouter)
 app.use("/api",productRouter)
 app.use("/api",authRouter)
-
+app.use("/api",userRouter)
 mongoose.connect(process.env.MONGO_URL);
 
 export const viteNodeApp = app;
